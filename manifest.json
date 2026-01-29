@@ -1,8 +1,8 @@
 {
   "name": "GestEglise",
   "short_name": "GestEglise",
-  "description": "Gestion financière et membres de l'église",
-  "start_url": "gestion_eglise_final.html",
+  "description": "Gestion financière de l'église",
+  "start_url": "/gestion_eglise_final.html",
   "display": "standalone",
   "background_color": "#667eea",
   "theme_color": "#667eea",
