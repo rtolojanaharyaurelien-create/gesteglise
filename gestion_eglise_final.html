@@ -1,0 +1,2095 @@
+<!DOCTYPE html>
+<html lang="fr">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#667eea">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Gestion Financiere Eglise</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js")
+    .then(() => console.log("Service Worker actif"))
+    .catch(err => console.log("Erreur SW", err));
+}
+</script>
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 10px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.logo-container {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.logo-container img {
+  max-width: 100px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.card {
+  background: #fff;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+input:disabled, select:disabled, textarea:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+input[type="file"] {
+  padding: 8px;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: #fff;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+  color: #fff;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: #fff;
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: #fff;
+}
+
+.btn-small {
+  width: auto;
+  padding: 8px 15px;
+  font-size: 12px;
+  display: inline-block;
+  margin: 2px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 10px 5px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+}
+
+tr:hover {
+  background: #f5f5f5;
+}
+
+.solde-box {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  margin: 15px 0;
+}
+
+.solde-box h2 {
+  color: #fff;
+  font-size: 28px;
+  margin-bottom: 5px;
+}
+
+.solde-box p {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.compte-item {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.compte-item .nom {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 16px;
+}
+
+.compte-item .montant {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.compte-item .montant.positif {
+  color: #38ef7d;
+}
+
+.compte-item .montant.negatif {
+  color: #f45c43;
+}
+
+.info-text {
+  font-size: 12px;
+  color: #666;
+  text-align: center;
+  margin-top: 10px;
+  padding: 10px;
+  background: #f0f0f0;
+  border-radius: 8px;
+}
+
+.alert {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.alert-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.alert-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.alert-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+  overflow-x: auto;
+}
+
+.tab {
+  flex: 1;
+  min-width: 70px;
+  padding: 12px 5px;
+  background: #e0e0e0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+  font-size: 12px;
+}
+
+.tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.header-bar {
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.user-info {
+  font-weight: 600;
+  color: #667eea;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.badge-credit {
+  background: #d4edda;
+  color: #155724;
+}
+
+.badge-debit {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.badge-role {
+  background: #667eea;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  margin-left: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+}
+
+.sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  font-size: 13px;
+}
+
+.sync-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ccc;
+}
+
+.sync-indicator.online {
+  background: #38ef7d;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.permission-note {
+  background: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+
+.membre-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.membre-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #667eea;
+}
+
+.membre-photo-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.membre-info {
+  flex: 1;
+}
+
+.membre-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.membre-details {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 3px;
+}
+
+.membre-actions {
+  display: flex;
+  gap: 5px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.search-box input {
+  padding-left: 15px;
+}
+
+.image-preview {
+  width: 100%;
+  max-width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  object-fit: cover;
+  margin: 10px auto;
+  display: block;
+  border: 2px solid #e0e0e0;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  animation: fadeIn 0.3s;
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 15px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 20px;
+}
+
+.close:hover {
+  color: #000;
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 5px;
+  }
+  
+  .card {
+    padding: 15px;
+  }
+  
+  table {
+    font-size: 11px;
+  }
+  
+  th, td {
+    padding: 8px 3px;
+  }
+  
+  .compte-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .membre-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .tab {
+    font-size: 10px;
+    padding: 10px 3px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginDiv">
+  <div class="logo-container">
+    <img src="https://i.postimg.cc/7hYTt6QM/Gemini-Generated-Image-2jdmfb2jdmfb2jdm.png" alt="Logo">
+  </div>
+  
+  <div class="card">
+    <h2>Connexion Securisee</h2>
+    
+    <div class="form-group">
+      <label>Selectionner votre role</label>
+      <select id="role">
+        <option value="">-- Choisir un role --</option>
+        <option value="tresorier">Tresorier (Acces complet)</option>
+        <option value="pasteur">Pasteur (Lecture seule)</option>
+        <option value="president">President (Administrateur)</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="pwd" placeholder="Entrez votre mot de passe">
+    </div>
+    
+    <button class="btn-primary" onclick="login()">Se connecter</button>
+    
+    <div class="info-text">
+      <strong>Mots de passe par defaut:</strong><br>
+      Tresorier: 0000 | Pasteur: 1111 | President: 1234
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  
+  <div class="header-bar">
+    <div class="user-info">
+      <span id="userRole"></span>
+      <span class="badge-role" id="userPermission"></span>
+    </div>
+    <button class="btn-small btn-danger" onclick="logout()">Deconnexion</button>
+  </div>
+
+  <div class="logo-container">
+    <img src="https://i.postimg.cc/7hYTt6QM/Gemini-Generated-Image-2jdmfb2jdmfb2jdm.png" alt="Logo">
+  </div>
+
+  <h1>Gestion Financiere</h1>
+
+  <!-- Permission Note for Pasteur -->
+  <div id="permissionNote" style="display:none" class="permission-note">
+    <strong>Mode Lecture seule</strong> - Vous pouvez consulter les donnees mais pas les modifier
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('operations')">Operations</button>
+    <button class="tab" onclick="showTab('diakona')">Diakona</button>
+    <button class="tab" onclick="showTab('mpiandry')">Mpiandry</button>
+    <button class="tab" onclick="showTab('mpandray')">Mpandray</button>
+    <button class="tab" onclick="showTab('bilan')">Bilan</button>
+    <button class="tab" onclick="showTab('parametres')">Parametres</button>
+  </div>
+
+  <!-- TAB OPERATIONS -->
+  <div id="operations" class="tab-content active">
+    
+    <!-- Creer Compte -->
+    <div class="card" id="createCompteCard">
+      <h3>Creer un Compte</h3>
+      <div class="form-group">
+        <input id="newCompte" placeholder="Ex: Dimes, Offrandes, Caisse...">
+      </div>
+      <button class="btn-success" onclick="addCompte()">Ajouter le compte</button>
+    </div>
+
+    <!-- Transaction -->
+    <div class="card" id="transactionCard">
+      <h3>Enregistrer une Transaction</h3>
+      
+      <div class="form-group">
+        <label>Compte</label>
+        <select id="tCompte"></select>
+      </div>
+      
+      <div class="form-group">
+        <label>Membre (optionnel)</label>
+        <input id="tMembre" placeholder="Nom du membre">
+      </div>
+      
+      <div class="form-group">
+        <label>Type d'operation</label>
+        <select id="tType">
+          <option value="credit">Credit (Entree)</option>
+          <option value="debit">Debit (Sortie)</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Montant (Ar)</label>
+        <input type="number" id="tMontant" placeholder="0">
+      </div>
+      
+      <div class="form-group">
+        <label>Motif</label>
+        <input id="tMotif" placeholder="Description de la transaction">
+      </div>
+      
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="tDate">
+      </div>
+      
+      <button class="btn-primary" onclick="addTransaction()">Enregistrer</button>
+    </div>
+
+    <!-- Pret / Emprunt -->
+    <div class="card" id="pretCard">
+      <h3>Pret / Emprunt</h3>
+      
+      <div class="form-group">
+        <label>Nom du fidele</label>
+        <input id="pMembre" placeholder="Nom complet">
+      </div>
+      
+      <div class="form-group">
+        <label>Type d'operation</label>
+        <select id="pType" onchange="toggleCompte()">
+          <option value="dette">Fidele prete a l'eglise (Dette)</option>
+          <option value="creance">Fidele emprunte a l'eglise (Creance)</option>
+        </select>
+      </div>
+      
+      <div class="form-group" id="compteEntreeDiv">
+        <label>Compte a crediter</label>
+        <select id="compteEntree"></select>
+      </div>
+      
+      <div class="form-group" id="compteSortieDiv" style="display:none">
+        <label>Compte a debiter</label>
+        <select id="compteSortie"></select>
+      </div>
+      
+      <div class="form-group">
+        <label>Montant (Ar)</label>
+        <input type="number" id="pMontant" placeholder="0">
+      </div>
+      
+      <div class="form-group">
+        <label>Date</label>
+        <input type="date" id="pDate">
+      </div>
+      
+      <button class="btn-warning" onclick="addPret()">Enregistrer</button>
+    </div>
+
+    <!-- Liste des Transactions -->
+    <div class="card">
+      <h3>Historique des Transactions</h3>
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Compte</th>
+              <th>Type</th>
+              <th>Montant</th>
+              <th id="actionHeader">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TAB DIAKONA -->
+  <div id="diakona" class="tab-content">
+    
+    <!-- Ajouter Diakona -->
+    <div class="card" id="addDiakonaCard">
+      <h3>Ajouter un Diakona</h3>
+      
+      <div class="form-group">
+        <label>Photo</label>
+        <input type="file" id="dPhoto" accept="image/*" onchange="previewImage(event, 'imagePreview')">
+        <img id="imagePreview" class="image-preview" style="display:none">
+      </div>
+      
+      <div class="form-group">
+        <label>Nom complet</label>
+        <input id="dNom" placeholder="Nom et prenom">
+      </div>
+      
+      <div class="form-group">
+        <label>Telephone</label>
+        <input type="tel" id="dTel" placeholder="034 00 000 00">
+      </div>
+      
+      <div class="form-group">
+        <label>Groupe</label>
+        <select id="dGroupe">
+          <option value="">-- Selectionner --</option>
+          <option value="Groupe 1">Groupe 1</option>
+          <option value="Groupe 2">Groupe 2</option>
+          <option value="Groupe 3">Groupe 3</option>
+          <option value="Groupe 4">Groupe 4</option>
+          <option value="Groupe 5">Groupe 5</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Adresse</label>
+        <textarea id="dAdresse" rows="2" placeholder="Adresse complete"></textarea>
+      </div>
+      
+      <button class="btn-success" onclick="addMembre('diakona')">Ajouter le Diakona</button>
+    </div>
+
+    <!-- Recherche -->
+    <div class="card">
+      <h3>Rechercher un Diakona</h3>
+      <div class="search-box">
+        <input type="text" id="searchDiakona" placeholder="Rechercher par nom, groupe..." onkeyup="searchMembres('diakona')">
+      </div>
+    </div>
+
+    <!-- Liste des Diakonas -->
+    <div class="card">
+      <h3>Liste des Diakonas (<span id="diakonaCount">0</span>)</h3>
+      <div id="diakonasList"></div>
+    </div>
+
+  </div>
+
+  <!-- TAB MPIANDRY -->
+  <div id="mpiandry" class="tab-content">
+    
+    <!-- Ajouter Mpiandry -->
+    <div class="card" id="addMpiandryCard">
+      <h3>Ajouter un Mpiandry</h3>
+      
+      <div class="form-group">
+        <label>Photo</label>
+        <input type="file" id="mpiPhoto" accept="image/*" onchange="previewImage(event, 'mpiImagePreview')">
+        <img id="mpiImagePreview" class="image-preview" style="display:none">
+      </div>
+      
+      <div class="form-group">
+        <label>Nom complet</label>
+        <input id="mpiNom" placeholder="Nom et prenom">
+      </div>
+      
+      <div class="form-group">
+        <label>Telephone</label>
+        <input type="tel" id="mpiTel" placeholder="034 00 000 00">
+      </div>
+      
+      <div class="form-group">
+        <label>Groupe</label>
+        <select id="mpiGroupe">
+          <option value="">-- Selectionner --</option>
+          <option value="Groupe 1">Groupe 1</option>
+          <option value="Groupe 2">Groupe 2</option>
+          <option value="Groupe 3">Groupe 3</option>
+          <option value="Groupe 4">Groupe 4</option>
+          <option value="Groupe 5">Groupe 5</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Adresse</label>
+        <textarea id="mpiAdresse" rows="2" placeholder="Adresse complete"></textarea>
+      </div>
+      
+      <button class="btn-success" onclick="addMembre('mpiandry')">Ajouter le Mpiandry</button>
+    </div>
+
+    <!-- Recherche -->
+    <div class="card">
+      <h3>Rechercher un Mpiandry</h3>
+      <div class="search-box">
+        <input type="text" id="searchMpiandry" placeholder="Rechercher par nom, groupe..." onkeyup="searchMembres('mpiandry')">
+      </div>
+    </div>
+
+    <!-- Liste des Mpiandry -->
+    <div class="card">
+      <h3>Liste des Mpiandry (<span id="mpiandryCount">0</span>)</h3>
+      <div id="mpiandryList"></div>
+    </div>
+
+  </div>
+
+  <!-- TAB MPANDRAY -->
+  <div id="mpandray" class="tab-content">
+    
+    <!-- Ajouter Mpandray -->
+    <div class="card" id="addMpandrayCard">
+      <h3>Ajouter un Mpandray</h3>
+      
+      <div class="form-group">
+        <label>Photo</label>
+        <input type="file" id="mpanPhoto" accept="image/*" onchange="previewImage(event, 'mpanImagePreview')">
+        <img id="mpanImagePreview" class="image-preview" style="display:none">
+      </div>
+      
+      <div class="form-group">
+        <label>Nom complet</label>
+        <input id="mpanNom" placeholder="Nom et prenom">
+      </div>
+      
+      <div class="form-group">
+        <label>Telephone</label>
+        <input type="tel" id="mpanTel" placeholder="034 00 000 00">
+      </div>
+      
+      <div class="form-group">
+        <label>Groupe</label>
+        <select id="mpanGroupe">
+          <option value="">-- Selectionner --</option>
+          <option value="Groupe 1">Groupe 1</option>
+          <option value="Groupe 2">Groupe 2</option>
+          <option value="Groupe 3">Groupe 3</option>
+          <option value="Groupe 4">Groupe 4</option>
+          <option value="Groupe 5">Groupe 5</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Adresse</label>
+        <textarea id="mpanAdresse" rows="2" placeholder="Adresse complete"></textarea>
+      </div>
+      
+      <button class="btn-success" onclick="addMembre('mpandray')">Ajouter le Mpandray</button>
+    </div>
+
+    <!-- Recherche -->
+    <div class="card">
+      <h3>Rechercher un Mpandray</h3>
+      <div class="search-box">
+        <input type="text" id="searchMpandray" placeholder="Rechercher par nom, groupe..." onkeyup="searchMembres('mpandray')">
+      </div>
+    </div>
+
+    <!-- Liste des Mpandray -->
+    <div class="card">
+      <h3>Liste des Mpandray (<span id="mpandrayCount">0</span>)</h3>
+      <div id="mpandrayList"></div>
+    </div>
+
+  </div>
+
+  <!-- TAB BILAN -->
+  <div id="bilan" class="tab-content">
+    
+    <div class="solde-box">
+      <p>Solde Global</p>
+      <h2 id="soldeSpan">0 Ar</h2>
+    </div>
+
+    <div class="card">
+      <h3>Detail des Comptes</h3>
+      <div id="bilans"></div>
+    </div>
+
+    <div class="card">
+      <h3>Statistiques</h3>
+      <div id="stats"></div>
+    </div>
+
+    <div class="card">
+      <button class="btn-info" onclick="exportPDF()">Exporter en PDF</button>
+    </div>
+
+  </div>
+
+  <!-- TAB PARAMETRES -->
+  <div id="parametres" class="tab-content">
+    
+    <div class="card" id="passwordCard">
+      <h3>Changer le Mot de Passe</h3>
+      
+      <div class="form-group">
+        <label>Ancien mot de passe</label>
+        <input type="password" id="oldPwd" placeholder="Mot de passe actuel">
+      </div>
+      
+      <div class="form-group">
+        <label>Nouveau mot de passe</label>
+        <input type="password" id="newPwd" placeholder="Nouveau mot de passe">
+      </div>
+      
+      <div class="form-group">
+        <label>Confirmer le nouveau mot de passe</label>
+        <input type="password" id="confirmPwd" placeholder="Confirmer">
+      </div>
+      
+      <button class="btn-warning" onclick="changePassword()">Modifier le mot de passe</button>
+    </div>
+
+    <div class="card" id="resetCard">
+      <h3>Gestion des Donnees</h3>
+      <button class="btn-danger" onclick="resetData()">Reinitialiser toutes les donnees</button>
+      <div class="info-text">Cette action supprimera toutes les transactions et comptes</div>
+    </div>
+
+    <div class="card">
+      <h3>Informations sur les Permissions</h3>
+      <div style="font-size:13px; line-height:1.6">
+        <p><strong>President (Administrateur):</strong></p>
+        <p>- Creer/Modifier/Supprimer des comptes et transactions<br>
+        - Gerer les membres (Diakona, Mpiandry, Mpandray)<br>
+        - Changer tous les mots de passe<br>
+        - Reinitialiser les donnees</p>
+        <br>
+        <p><strong>Tresorier (Acces complet):</strong></p>
+        <p>- Creer/Modifier/Supprimer des comptes et transactions<br>
+        - Gerer les membres<br>
+        - Changer son mot de passe</p>
+        <br>
+        <p><strong>Pasteur (Lecture seule):</strong></p>
+        <p>- Consulter les bilans et transactions<br>
+        - Consulter les membres<br>
+        - Exporter en PDF<br>
+        - Changer son mot de passe</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Modal Details Transaction -->
+<div id="detailModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('detailModal')">&times;</span>
+    <h3>Details de la Transaction</h3>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- Modal Details Membre -->
+<div id="membreModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('membreModal')">&times;</span>
+    <h3 id="membreModalTitle">Profil du Membre</h3>
+    <div id="membreModalContent"></div>
+  </div>
+</div>
+
+<!-- Modal Cotisation -->
+<div id="cotisationModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('cotisationModal')">&times;</span>
+    <h3>Enregistrer une Cotisation</h3>
+    <div id="cotisationForm">
+      <input type="hidden" id="cotisationMembreId">
+      <input type="hidden" id="cotisationMembreType">
+      <div class="form-group">
+        <label>Membre</label>
+        <input type="text" id="cotisationMembreName" disabled>
+      </div>
+      
+      <div class="form-group">
+        <label>Montant (Ar)</label>
+        <input type="number" id="cotisationMontant" placeholder="0">
+      </div>
+      
+      <div class="form-group">
+        <label>Mois</label>
+        <select id="cotisationMois">
+          <option value="">-- Selectionner --</option>
+          <option value="Janvier">Janvier</option>
+          <option value="Fevrier">Fevrier</option>
+          <option value="Mars">Mars</option>
+          <option value="Avril">Avril</option>
+          <option value="Mai">Mai</option>
+          <option value="Juin">Juin</option>
+          <option value="Juillet">Juillet</option>
+          <option value="Aout">Aout</option>
+          <option value="Septembre">Septembre</option>
+          <option value="Octobre">Octobre</option>
+          <option value="Novembre">Novembre</option>
+          <option value="Decembre">Decembre</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Annee</label>
+        <input type="number" id="cotisationAnnee" value="2026">
+      </div>
+      
+      <div class="form-group">
+        <label>Date de paiement</label>
+        <input type="date" id="cotisationDate">
+      </div>
+      
+      <button class="btn-success" onclick="saveCotisation()">Enregistrer la cotisation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Modifier Membre -->
+<div id="editMembreModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('editMembreModal')">&times;</span>
+    <h3>Modifier le Membre</h3>
+    <div id="editMembreForm">
+      <input type="hidden" id="editMembreId">
+      <input type="hidden" id="editMembreType">
+      
+      <div class="form-group">
+        <label>Photo actuelle</label>
+        <img id="editImagePreview" class="image-preview" style="display:none">
+        <div id="editImagePlaceholder" class="membre-photo-placeholder" style="margin:10px auto"></div>
+      </div>
+      
+      <div class="form-group">
+        <label>Nouvelle photo (optionnel)</label>
+        <input type="file" id="editPhoto" accept="image/*" onchange="previewEditImage(event)">
+      </div>
+      
+      <div class="form-group">
+        <label>Nom complet</label>
+        <input id="editNom" placeholder="Nom et prenom">
+      </div>
+      
+      <div class="form-group">
+        <label>Telephone</label>
+        <input type="tel" id="editTel" placeholder="034 00 000 00">
+      </div>
+      
+      <div class="form-group">
+        <label>Groupe</label>
+        <select id="editGroupe">
+          <option value="">-- Selectionner --</option>
+          <option value="Groupe 1">Groupe 1</option>
+          <option value="Groupe 2">Groupe 2</option>
+          <option value="Groupe 3">Groupe 3</option>
+          <option value="Groupe 4">Groupe 4</option>
+          <option value="Groupe 5">Groupe 5</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Adresse</label>
+        <textarea id="editAdresse" rows="2" placeholder="Adresse complete"></textarea>
+      </div>
+      
+      <button class="btn-warning" onclick="updateMembre()">Enregistrer les modifications</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script>
+// Permissions par role
+const PERMISSIONS = {
+  pasteur: {
+    canCreate: false,
+    canEdit: false,
+    canDelete: false,
+    canChangeOwnPassword: true,
+    canResetData: false,
+    label: "Lecture seule"
+  },
+  tresorier: {
+    canCreate: true,
+    canEdit: true,
+    canDelete: true,
+    canChangeOwnPassword: true,
+    canResetData: false,
+    label: "Acces complet"
+  },
+  president: {
+    canCreate: true,
+    canEdit: true,
+    canDelete: true,
+    canChangeOwnPassword: true,
+    canResetData: true,
+    label: "Administrateur"
+  }
+};
+
+// Configuration des comptes pour chaque type de membre
+const MEMBRE_CONFIGS = {
+  diakona: {
+    compte: 'Diakona',
+    pluriel: 'Diakonas'
+  },
+  mpiandry: {
+    compte: 'SA3F',
+    pluriel: 'Mpiandry'
+  },
+  mpandray: {
+    compte: 'Adidy Fiangonana',
+    pluriel: 'Mpandray'
+  }
+};
+
+let users = JSON.parse(localStorage.getItem("users") || '{"tresorier":"0000","pasteur":"1111","president":"1234"}');
+let comptes = JSON.parse(localStorage.getItem("comptes") || "[]");
+let transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
+let prets = JSON.parse(localStorage.getItem("prets") || "[]");
+let diakonas = JSON.parse(localStorage.getItem("diakonas") || "[]");
+let mpiandry = JSON.parse(localStorage.getItem("mpiandry") || "[]");
+let mpandray = JSON.parse(localStorage.getItem("mpandray") || "[]");
+let cotisations = JSON.parse(localStorage.getItem("cotisations") || "[]");
+let currentUser = "";
+let currentPermissions = null;
+
+// S'assurer que les comptes necessaires existent
+['Diakona', 'SA3F', 'Adidy Fiangonana'].forEach(compte => {
+  if (!comptes.includes(compte)) {
+    comptes.push(compte);
+  }
+});
+localStorage.setItem("comptes", JSON.stringify(comptes));
+
+function applyPermissions() {
+  const isReadOnly = !currentPermissions.canCreate;
+  
+  document.getElementById('permissionNote').style.display = isReadOnly ? 'block' : 'none';
+  
+  if (isReadOnly) {
+    document.getElementById('createCompteCard').style.display = 'none';
+    document.getElementById('transactionCard').style.display = 'none';
+    document.getElementById('pretCard').style.display = 'none';
+    document.getElementById('actionHeader').style.display = 'none';
+    document.getElementById('addDiakonaCard').style.display = 'none';
+    document.getElementById('addMpiandryCard').style.display = 'none';
+    document.getElementById('addMpandrayCard').style.display = 'none';
+  }
+  
+  if (!currentPermissions.canResetData) {
+    document.getElementById('resetCard').style.display = 'none';
+  }
+}
+
+function login() {
+  let r = document.getElementById("role").value;
+  let p = document.getElementById("pwd").value;
+  
+  if (!r) {
+    alert("Veuillez selectionner un role");
+    return;
+  }
+  
+  if (users[r] !== p) {
+    alert("Mot de passe incorrect");
+    return;
+  }
+  
+  currentUser = r;
+  currentPermissions = PERMISSIONS[r];
+  
+  document.getElementById("loginDiv").style.display = "none";
+  document.getElementById("app").style.display = "block";
+  
+  let roleNames = {
+    tresorier: "Tresorier",
+    pasteur: "Pasteur",
+    president: "President"
+  };
+  
+  document.getElementById("userRole").innerText = roleNames[r];
+  document.getElementById("userPermission").innerText = currentPermissions.label;
+  
+  applyPermissions();
+  refresh();
+  renderMembres('diakona');
+  renderMembres('mpiandry');
+  renderMembres('mpandray');
+}
+
+function logout() {
+  if (confirm("Voulez-vous vraiment vous deconnecter ?")) {
+    document.getElementById("loginDiv").style.display = "block";
+    document.getElementById("app").style.display = "none";
+    document.getElementById("role").value = "";
+    document.getElementById("pwd").value = "";
+    currentUser = "";
+    currentPermissions = null;
+  }
+}
+
+function save() {
+  localStorage.setItem("users", JSON.stringify(users));
+  localStorage.setItem("comptes", JSON.stringify(comptes));
+  localStorage.setItem("transactions", JSON.stringify(transactions));
+  localStorage.setItem("prets", JSON.stringify(prets));
+  localStorage.setItem("diakonas", JSON.stringify(diakonas));
+  localStorage.setItem("mpiandry", JSON.stringify(mpiandry));
+  localStorage.setItem("mpandray", JSON.stringify(mpandray));
+  localStorage.setItem("cotisations", JSON.stringify(cotisations));
+}
+
+function refresh() {
+  let tCompte = document.getElementById("tCompte");
+  let compteEntree = document.getElementById("compteEntree");
+  let compteSortie = document.getElementById("compteSortie");
+  
+  tCompte.innerHTML = "<option value=''>-- Selectionner --</option>";
+  compteEntree.innerHTML = "<option value=''>-- Selectionner --</option>";
+  compteSortie.innerHTML = "<option value=''>-- Selectionner --</option>";
+  
+  comptes.forEach(c => {
+    tCompte.innerHTML += `<option value="${c}">${c}</option>`;
+    compteEntree.innerHTML += `<option value="${c}">${c}</option>`;
+    compteSortie.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+  
+  render();
+}
+
+function addCompte() {
+  if (!currentPermissions.canCreate) {
+    alert("Vous n'avez pas la permission de creer des comptes");
+    return;
+  }
+  
+  let newCompte = document.getElementById("newCompte");
+  if (!newCompte.value.trim()) {
+    alert("Veuillez entrer un nom de compte");
+    return;
+  }
+  
+  if (comptes.includes(newCompte.value.trim())) {
+    alert("Ce compte existe deja");
+    return;
+  }
+  
+  comptes.push(newCompte.value.trim());
+  newCompte.value = "";
+  save();
+  refresh();
+  alert("Compte cree avec succes");
+}
+
+function addTransaction() {
+  if (!currentPermissions.canCreate) {
+    alert("Vous n'avez pas la permission d'ajouter des transactions");
+    return;
+  }
+  
+  let tCompte = document.getElementById("tCompte").value;
+  let tMembre = document.getElementById("tMembre").value;
+  let tType = document.getElementById("tType").value;
+  let tMontant = document.getElementById("tMontant").value;
+  let tMotif = document.getElementById("tMotif").value;
+  let tDate = document.getElementById("tDate").value;
+  
+  if (!tCompte || !tMontant || !tDate) {
+    alert("Veuillez remplir tous les champs obligatoires");
+    return;
+  }
+  
+  if (parseFloat(tMontant) <= 0) {
+    alert("Le montant doit etre superieur a 0");
+    return;
+  }
+  
+  transactions.push({
+    id: Date.now(),
+    compte: tCompte,
+    membre: tMembre,
+    type: tType,
+    montant: parseFloat(tMontant),
+    motif: tMotif,
+    date: tDate,
+    createdBy: currentUser
+  });
+  
+  document.getElementById("tMembre").value = "";
+  document.getElementById("tMontant").value = "";
+  document.getElementById("tMotif").value = "";
+  
+  save();
+  render();
+  alert("Transaction enregistree");
+}
+
+function toggleCompte() {
+  let pType = document.getElementById("pType").value;
+  let compteEntreeDiv = document.getElementById("compteEntreeDiv");
+  let compteSortieDiv = document.getElementById("compteSortieDiv");
+  
+  if (pType === "dette") {
+    compteEntreeDiv.style.display = "block";
+    compteSortieDiv.style.display = "none";
+  } else {
+    compteEntreeDiv.style.display = "none";
+    compteSortieDiv.style.display = "block";
+  }
+}
+
+function addPret() {
+  if (!currentPermissions.canCreate) {
+    alert("Vous n'avez pas la permission d'ajouter des prets");
+    return;
+  }
+  
+  let pMembre = document.getElementById("pMembre").value;
+  let pType = document.getElementById("pType").value;
+  let pMontant = document.getElementById("pMontant").value;
+  let pDate = document.getElementById("pDate").value;
+  
+  if (!pMembre || !pMontant || !pDate) {
+    alert("Veuillez remplir tous les champs");
+    return;
+  }
+  
+  if (parseFloat(pMontant) <= 0) {
+    alert("Le montant doit etre superieur a 0");
+    return;
+  }
+  
+  let id = Date.now();
+  let compte = pType === "dette" ? document.getElementById("compteEntree").value : document.getElementById("compteSortie").value;
+  let tTypeOp = pType === "dette" ? "credit" : "debit";
+  
+  if (!compte) {
+    alert("Veuillez selectionner un compte");
+    return;
+  }
+
+  transactions.push({
+    id: id,
+    compte: compte,
+    membre: pMembre,
+    type: tTypeOp,
+    montant: parseFloat(pMontant),
+    motif: pType === "dette" ? "Pret du fidele a l'eglise" : "Emprunt du fidele aupres de l'eglise",
+    date: pDate,
+    createdBy: currentUser
+  });
+
+  prets.push({
+    id: id,
+    transactionId: id,
+    type: pType,
+    membre: pMembre,
+    montant: parseFloat(pMontant),
+    date: pDate,
+    statut: "en_cours"
+  });
+  
+  document.getElementById("pMembre").value = "";
+  document.getElementById("pMontant").value = "";
+  
+  save();
+  render();
+  alert("Pret/Emprunt enregistre");
+}
+
+function deleteTransaction(id) {
+  if (!currentPermissions.canDelete) {
+    alert("Vous n'avez pas la permission de supprimer des transactions");
+    return;
+  }
+  
+  if (confirm("Voulez-vous vraiment supprimer cette transaction ?")) {
+    transactions = transactions.filter(t => t.id !== id);
+    prets = prets.filter(p => p.transactionId !== id);
+    save();
+    render();
+    alert("Transaction supprimee");
+  }
+}
+
+function showTransactionDetail(id) {
+  let t = transactions.find(tr => tr.id === id);
+  if (!t) return;
+  
+  let pret = prets.find(p => p.transactionId === id);
+  
+  let html = `
+    <p><strong>Date:</strong> ${t.date}</p>
+    <p><strong>Compte:</strong> ${t.compte}</p>
+    <p><strong>Type:</strong> ${t.type === 'credit' ? 'Credit' : 'Debit'}</p>
+    <p><strong>Montant:</strong> ${t.montant.toLocaleString()} Ar</p>
+    <p><strong>Membre:</strong> ${t.membre || '-'}</p>
+    <p><strong>Motif:</strong> ${t.motif || '-'}</p>
+    ${pret ? `<p><strong>Type pret:</strong> ${pret.type === 'dette' ? 'Dette' : 'Creance'}</p>` : ''}
+    <p><strong>Cree par:</strong> ${t.createdBy || '-'}</p>
+  `;
+  
+  document.getElementById("modalContent").innerHTML = html;
+  document.getElementById("detailModal").style.display = "block";
+}
+
+function closeModal(modalId) {
+  document.getElementById(modalId).style.display = "none";
+}
+
+function render() {
+  let tableBody = document.getElementById("tableBody");
+  let bilans = document.getElementById("bilans");
+  let stats = document.getElementById("stats");
+  
+  tableBody.innerHTML = "";
+  bilans.innerHTML = "";
+  
+  let solde = 0;
+  let compteSoldes = {};
+  let totalCredits = 0;
+  let totalDebits = 0;
+  
+  comptes.forEach(c => {
+    let s = 0;
+    transactions.filter(t => t.compte === c).forEach(t => {
+      if (t.type === "credit") {
+        s += t.montant;
+        totalCredits += t.montant;
+      } else {
+        s -= t.montant;
+        totalDebits += t.montant;
+      }
+    });
+    compteSoldes[c] = s;
+    solde += s;
+  });
+  
+  if (comptes.length === 0) {
+    bilans.innerHTML = '<div class="empty-state">Aucun compte cree</div>';
+  } else {
+    comptes.forEach(c => {
+      let montant = compteSoldes[c];
+      let classe = montant >= 0 ? 'positif' : 'negatif';
+      bilans.innerHTML += `
+        <div class="compte-item">
+          <div class="nom">${c}</div>
+          <div class="montant ${classe}">${montant.toLocaleString()} Ar</div>
+        </div>
+      `;
+    });
+  }
+  
+  stats.innerHTML = `
+    <div class="compte-item">
+      <div class="nom">Total Credits</div>
+      <div class="montant positif">${totalCredits.toLocaleString()} Ar</div>
+    </div>
+    <div class="compte-item">
+      <div class="nom">Total Debits</div>
+      <div class="montant negatif">${totalDebits.toLocaleString()} Ar</div>
+    </div>
+    <div class="compte-item">
+      <div class="nom">Nombre de transactions</div>
+      <div class="montant">${transactions.length}</div>
+    </div>
+    <div class="compte-item">
+      <div class="nom">Prets/Emprunts actifs</div>
+      <div class="montant">${prets.filter(p => p.statut === 'en_cours').length}</div>
+    </div>
+    <div class="compte-item">
+      <div class="nom">Nombre de Diakonas</div>
+      <div class="montant">${diakonas.length}</div>
+    </div>
+    <div class="compte-item">
+      <div class="nom">Nombre de Mpiandry</div>
+      <div class="montant">${mpiandry.length}</div>
+    </div>
+    <div class="compte-item">
+      <div class="nom">Nombre de Mpandray</div>
+      <div class="montant">${mpandray.length}</div>
+    </div>
+  `;
+  
+  if (transactions.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="5" class="empty-state">Aucune transaction</td></tr>';
+  } else {
+    transactions.slice().reverse().forEach(t => {
+      let badgeClass = t.type === 'credit' ? 'badge-credit' : 'badge-debit';
+      let deleteBtn = currentPermissions && currentPermissions.canDelete 
+        ? `<button class="btn-small btn-danger" onclick="event.stopPropagation(); deleteTransaction(${t.id})">Suppr</button>`
+        : '';
+      
+      tableBody.innerHTML += `
+        <tr onclick="showTransactionDetail(${t.id})" style="cursor:pointer">
+          <td>${t.date}</td>
+          <td>${t.compte}</td>
+          <td><span class="badge ${badgeClass}">${t.type === 'credit' ? 'Credit' : 'Debit'}</span></td>
+          <td style="font-weight:600">${t.montant.toLocaleString()} Ar</td>
+          <td>${deleteBtn}</td>
+        </tr>
+      `;
+    });
+  }
+  
+  document.getElementById("soldeSpan").innerText = solde.toLocaleString() + " Ar";
+}
+
+// MEMBRES FUNCTIONS
+function getMembresArray(type) {
+  if (type === 'diakona') return diakonas;
+  if (type === 'mpiandry') return mpiandry;
+  if (type === 'mpandray') return mpandray;
+  return [];
+}
+
+function setMembresArray(type, array) {
+  if (type === 'diakona') diakonas = array;
+  if (type === 'mpiandry') mpiandry = array;
+  if (type === 'mpandray') mpandray = array;
+}
+
+function getInputIds(type) {
+  if (type === 'diakona') {
+    return { photo: 'dPhoto', nom: 'dNom', tel: 'dTel', groupe: 'dGroupe', adresse: 'dAdresse', preview: 'imagePreview' };
+  }
+  if (type === 'mpiandry') {
+    return { photo: 'mpiPhoto', nom: 'mpiNom', tel: 'mpiTel', groupe: 'mpiGroupe', adresse: 'mpiAdresse', preview: 'mpiImagePreview' };
+  }
+  if (type === 'mpandray') {
+    return { photo: 'mpanPhoto', nom: 'mpanNom', tel: 'mpanTel', groupe: 'mpanGroupe', adresse: 'mpanAdresse', preview: 'mpanImagePreview' };
+  }
+  return null;
+}
+
+function previewImage(event, previewId) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById(previewId);
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function previewEditImage(event) {
+  const file = event.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const preview = document.getElementById('editImagePreview');
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      document.getElementById('editImagePlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+function addMembre(type) {
+  if (!currentPermissions.canCreate) {
+    alert("Vous n'avez pas la permission d'ajouter des membres");
+    return;
+  }
+  
+  const ids = getInputIds(type);
+  const photoInput = document.getElementById(ids.photo);
+  const nom = document.getElementById(ids.nom).value.trim();
+  const tel = document.getElementById(ids.tel).value.trim();
+  const groupe = document.getElementById(ids.groupe).value;
+  const adresse = document.getElementById(ids.adresse).value.trim();
+  
+  if (!nom || !groupe) {
+    alert("Veuillez remplir au moins le nom et le groupe");
+    return;
+  }
+  
+  const file = photoInput.files[0];
+  
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      saveMembre(type, e.target.result, nom, tel, groupe, adresse);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    saveMembre(type, null, nom, tel, groupe, adresse);
+  }
+}
+
+function saveMembre(type, photo, nom, tel, groupe, adresse) {
+  const ids = getInputIds(type);
+  const membre = {
+    id: Date.now(),
+    photo: photo,
+    nom: nom,
+    tel: tel,
+    groupe: groupe,
+    adresse: adresse,
+    dateAjout: new Date().toISOString().split('T')[0],
+    createdBy: currentUser
+  };
+  
+  const membres = getMembresArray(type);
+  membres.push(membre);
+  setMembresArray(type, membres);
+  
+  document.getElementById(ids.photo).value = '';
+  document.getElementById(ids.nom).value = '';
+  document.getElementById(ids.tel).value = '';
+  document.getElementById(ids.groupe).value = '';
+  document.getElementById(ids.adresse).value = '';
+  document.getElementById(ids.preview).style.display = 'none';
+  
+  save();
+  renderMembres(type);
+  alert("Membre ajoute avec succes");
+}
+
+function renderMembres(type) {
+  const listId = type + 'List';
+  const countId = type + 'Count';
+  const searchId = 'search' + type.charAt(0).toUpperCase() + type.slice(1);
+  
+  const list = document.getElementById(listId);
+  const searchInput = document.getElementById(searchId);
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+  
+  const membres = getMembresArray(type);
+  let filtered = membres;
+  
+  if (searchTerm) {
+    filtered = membres.filter(m => 
+      m.nom.toLowerCase().includes(searchTerm) ||
+      m.groupe.toLowerCase().includes(searchTerm) ||
+      (m.tel && m.tel.toLowerCase().includes(searchTerm))
+    );
+  }
+  
+  document.getElementById(countId).innerText = filtered.length;
+  
+  if (filtered.length === 0) {
+    list.innerHTML = '<div class="empty-state">Aucun membre trouve</div>';
+    return;
+  }
+  
+  const config = MEMBRE_CONFIGS[type];
+  list.innerHTML = '';
+  
+  filtered.forEach(m => {
+    const initiales = m.nom.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    const cotisationsMembre = cotisations.filter(c => c.membreId === m.id && c.membreType === type);
+    const cotisationCount = cotisationsMembre.length;
+    const totalCotisation = cotisationsMembre.reduce((sum, c) => sum + c.montant, 0);
+    
+    const photoHtml = m.photo 
+      ? `<img src="${m.photo}" class="membre-photo" alt="${m.nom}">`
+      : `<div class="membre-photo-placeholder">${initiales}</div>`;
+    
+    const actions = currentPermissions && currentPermissions.canEdit
+      ? `
+        <div class="membre-actions">
+          <button class="btn-small btn-info" onclick="showCotisationModal(${m.id}, '${m.nom}', '${type}')">Cotisation</button>
+          <button class="btn-small btn-warning" onclick="showEditMembreModal(${m.id}, '${type}')">Modifier</button>
+          <button class="btn-small btn-danger" onclick="deleteMembre(${m.id}, '${type}')">Suppr</button>
+        </div>
+      `
+      : '';
+    
+    list.innerHTML += `
+      <div class="membre-card" onclick="showMembreDetail(${m.id}, '${type}')">
+        ${photoHtml}
+        <div class="membre-info">
+          <div class="membre-name">${m.nom}</div>
+          <div class="membre-details">Tel: ${m.tel || 'Non renseigne'}</div>
+          <div class="membre-details">Groupe: ${m.groupe}</div>
+          <div class="membre-details">Cotisations: ${cotisationCount} - Total: ${totalCotisation.toLocaleString()} Ar</div>
+          ${actions}
+        </div>
+      </div>
+    `;
+  });
+}
+
+function searchMembres(type) {
+  renderMembres(type);
+}
+
+function showMembreDetail(id, type) {
+  const membres = getMembresArray(type);
+  const m = membres.find(membre => membre.id === id);
+  if (!m) return;
+  
+  const config = MEMBRE_CONFIGS[type];
+  const initiales = m.nom.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+  const photoHtml = m.photo 
+    ? `<img src="${m.photo}" class="image-preview" alt="${m.nom}">`
+    : `<div class="membre-photo-placeholder" style="width:150px;height:150px;font-size:48px;margin:0 auto 15px">${initiales}</div>`;
+  
+  const membreCotisations = cotisations.filter(c => c.membreId === id && c.membreType === type);
+  const totalCotisation = membreCotisations.reduce((sum, c) => sum + c.montant, 0);
+  
+  let cotisationsHtml = '';
+  if (membreCotisations.length > 0) {
+    cotisationsHtml = '<h4 style="margin-top:15px">Historique des cotisations:</h4>';
+    membreCotisations.forEach(c => {
+      cotisationsHtml += `<p>${c.mois} ${c.annee} - ${c.montant.toLocaleString()} Ar (paye le ${c.date})</p>`;
+    });
+    cotisationsHtml += `<p style="margin-top:10px"><strong>Total: ${totalCotisation.toLocaleString()} Ar</strong></p>`;
+  } else {
+    cotisationsHtml = '<p style="margin-top:15px">Aucune cotisation enregistree</p>';
+  }
+  
+  const html = `
+    ${photoHtml}
+    <p><strong>Nom:</strong> ${m.nom}</p>
+    <p><strong>Telephone:</strong> ${m.tel || 'Non renseigne'}</p>
+    <p><strong>Groupe:</strong> ${m.groupe}</p>
+    <p><strong>Adresse:</strong> ${m.adresse || 'Non renseignee'}</p>
+    <p><strong>Date d'ajout:</strong> ${m.dateAjout}</p>
+    <p><strong>Type:</strong> ${config.pluriel}</p>
+    ${cotisationsHtml}
+  `;
+  
+  document.getElementById('membreModalTitle').innerText = 'Profil - ' + config.pluriel;
+  document.getElementById('membreModalContent').innerHTML = html;
+  document.getElementById('membreModal').style.display = 'block';
+}
+
+function showCotisationModal(membreId, membreNom, membreType) {
+  document.getElementById('cotisationMembreId').value = membreId;
+  document.getElementById('cotisationMembreType').value = membreType;
+  document.getElementById('cotisationMembreName').value = membreNom;
+  
+  const today = new Date();
+  const mois = ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre'];
+  const currentMonth = mois[today.getMonth()];
+  const currentYear = today.getFullYear();
+  
+  document.getElementById('cotisationMois').value = currentMonth;
+  document.getElementById('cotisationAnnee').value = currentYear;
+  document.getElementById('cotisationDate').value = today.toISOString().split('T')[0];
+  document.getElementById('cotisationMontant').value = '';
+  
+  document.getElementById('cotisationModal').style.display = 'block';
+}
+
+function saveCotisation() {
+  if (!currentPermissions.canCreate) {
+    alert("Vous n'avez pas la permission d'enregistrer des cotisations");
+    return;
+  }
+  
+  const membreId = parseInt(document.getElementById('cotisationMembreId').value);
+  const membreType = document.getElementById('cotisationMembreType').value;
+  const montant = parseFloat(document.getElementById('cotisationMontant').value);
+  const mois = document.getElementById('cotisationMois').value;
+  const annee = document.getElementById('cotisationAnnee').value;
+  const date = document.getElementById('cotisationDate').value;
+  
+  if (!montant || !mois || !annee || !date) {
+    alert("Veuillez remplir tous les champs");
+    return;
+  }
+  
+  if (montant <= 0) {
+    alert("Le montant doit etre superieur a 0");
+    return;
+  }
+  
+  const exists = cotisations.find(c => 
+    c.membreId === membreId && 
+    c.membreType === membreType &&
+    c.mois === mois && 
+    c.annee === annee
+  );
+  
+  if (exists) {
+    if (!confirm("Une cotisation existe deja pour ce mois. Voulez-vous l'ecraser ?")) {
+      return;
+    }
+    cotisations = cotisations.filter(c => c.id !== exists.id);
+  }
+  
+  const cotisation = {
+    id: Date.now(),
+    membreId: membreId,
+    membreType: membreType,
+    montant: montant,
+    mois: mois,
+    annee: annee,
+    date: date,
+    createdBy: currentUser
+  };
+  
+  cotisations.push(cotisation);
+  
+  const config = MEMBRE_CONFIGS[membreType];
+  const membres = getMembresArray(membreType);
+  const membre = membres.find(m => m.id === membreId);
+  
+  transactions.push({
+    id: Date.now() + 1,
+    compte: config.compte,
+    membre: membre.nom,
+    type: "credit",
+    montant: montant,
+    motif: `Cotisation ${mois} ${annee} - ${config.pluriel}`,
+    date: date,
+    createdBy: currentUser
+  });
+  
+  save();
+  render();
+  renderMembres(membreType);
+  closeModal('cotisationModal');
+  alert("Cotisation enregistree avec succes");
+}
+
+function showEditMembreModal(id, type) {
+  const membres = getMembresArray(type);
+  const m = membres.find(membre => membre.id === id);
+  if (!m) return;
+  
+  document.getElementById('editMembreId').value = m.id;
+  document.getElementById('editMembreType').value = type;
+  document.getElementById('editNom').value = m.nom;
+  document.getElementById('editTel').value = m.tel || '';
+  document.getElementById('editGroupe').value = m.groupe;
+  document.getElementById('editAdresse').value = m.adresse || '';
+  document.getElementById('editPhoto').value = '';
+  
+  if (m.photo) {
+    document.getElementById('editImagePreview').src = m.photo;
+    document.getElementById('editImagePreview').style.display = 'block';
+    document.getElementById('editImagePlaceholder').style.display = 'none';
+  } else {
+    document.getElementById('editImagePreview').style.display = 'none';
+    const initiales = m.nom.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    document.getElementById('editImagePlaceholder').innerText = initiales;
+    document.getElementById('editImagePlaceholder').style.display = 'flex';
+  }
+  
+  document.getElementById('editMembreModal').style.display = 'block';
+}
+
+function updateMembre() {
+  if (!currentPermissions.canEdit) {
+    alert("Vous n'avez pas la permission de modifier des membres");
+    return;
+  }
+  
+  const id = parseInt(document.getElementById('editMembreId').value);
+  const type = document.getElementById('editMembreType').value;
+  const nom = document.getElementById('editNom').value.trim();
+  const tel = document.getElementById('editTel').value.trim();
+  const groupe = document.getElementById('editGroupe').value;
+  const adresse = document.getElementById('editAdresse').value.trim();
+  const photoInput = document.getElementById('editPhoto');
+  
+  if (!nom || !groupe) {
+    alert("Veuillez remplir au moins le nom et le groupe");
+    return;
+  }
+  
+  const membres = getMembresArray(type);
+  const membreIndex = membres.findIndex(m => m.id === id);
+  if (membreIndex === -1) return;
+  
+  if (photoInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      membres[membreIndex].photo = e.target.result;
+      membres[membreIndex].nom = nom;
+      membres[membreIndex].tel = tel;
+      membres[membreIndex].groupe = groupe;
+      membres[membreIndex].adresse = adresse;
+      
+      setMembresArray(type, membres);
+      save();
+      renderMembres(type);
+      closeModal('editMembreModal');
+      alert("Membre modifie avec succes");
+    };
+    reader.readAsDataURL(photoInput.files[0]);
+  } else {
+    membres[membreIndex].nom = nom;
+    membres[membreIndex].tel = tel;
+    membres[membreIndex].groupe = groupe;
+    membres[membreIndex].adresse = adresse;
+    
+    setMembresArray(type, membres);
+    save();
+    renderMembres(type);
+    closeModal('editMembreModal');
+    alert("Membre modifie avec succes");
+  }
+}
+
+function deleteMembre(id, type) {
+  if (!currentPermissions.canDelete) {
+    alert("Vous n'avez pas la permission de supprimer des membres");
+    return;
+  }
+  
+  const membres = getMembresArray(type);
+  const membre = membres.find(m => m.id === id);
+  if (!membre) return;
+  
+  if (confirm(`Voulez-vous vraiment supprimer ${membre.nom} ? Toutes ses cotisations seront egalement supprimees.`)) {
+    const newMembres = membres.filter(m => m.id !== id);
+    setMembresArray(type, newMembres);
+    cotisations = cotisations.filter(c => !(c.membreId === id && c.membreType === type));
+    
+    save();
+    renderMembres(type);
+    alert("Membre supprime");
+  }
+}
+
+function showTab(tabName) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+}
+
+function changePassword() {
+  if (!currentPermissions.canChangeOwnPassword) {
+    alert("Vous n'avez pas la permission de changer le mot de passe");
+    return;
+  }
+  
+  let oldPwd = document.getElementById("oldPwd").value;
+  let newPwd = document.getElementById("newPwd").value;
+  let confirmPwd = document.getElementById("confirmPwd").value;
+  
+  if (!oldPwd || !newPwd || !confirmPwd) {
+    alert("Veuillez remplir tous les champs");
+    return;
+  }
+  
+  if (users[currentUser] !== oldPwd) {
+    alert("Ancien mot de passe incorrect");
+    return;
+  }
+  
+  if (newPwd.length < 4) {
+    alert("Le nouveau mot de passe doit contenir au moins 4 caracteres");
+    return;
+  }
+  
+  if (newPwd !== confirmPwd) {
+    alert("Les mots de passe ne correspondent pas");
+    return;
+  }
+  
+  users[currentUser] = newPwd;
+  save();
+  
+  document.getElementById("oldPwd").value = "";
+  document.getElementById("newPwd").value = "";
+  document.getElementById("confirmPwd").value = "";
+  
+  alert("Mot de passe modifie avec succes");
+}
+
+function resetData() {
+  if (!currentPermissions.canResetData) {
+    alert("Seul le President peut reinitialiser les donnees");
+    return;
+  }
+  
+  if (confirm("ATTENTION ! Cette action supprimera TOUTES les donnees (transactions, comptes, prets, membres). Continuer ?")) {
+    if (confirm("Etes-vous VRAIMENT sur ? Cette action est irreversible !")) {
+      comptes = ['Diakona', 'SA3F', 'Adidy Fiangonana'];
+      transactions = [];
+      prets = [];
+      diakonas = [];
+      mpiandry = [];
+      mpandray = [];
+      cotisations = [];
+      save();
+      refresh();
+      renderMembres('diakona');
+      renderMembres('mpiandry');
+      renderMembres('mpandray');
+      alert("Toutes les donnees ont ete supprimees");
+    }
+  }
+}
+
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  let pdf = new jsPDF();
+  
+  pdf.setFontSize(18);
+  pdf.text("Rapport Financier Eglise", 105, 15, { align: "center" });
+  
+  pdf.setFontSize(12);
+  let y = 30;
+  
+  pdf.text("Date: " + new Date().toLocaleDateString('fr-FR'), 10, y);
+  y += 10;
+  
+  pdf.setFontSize(14);
+  pdf.text("Detail des comptes:", 10, y);
+  y += 10;
+  
+  pdf.setFontSize(11);
+  comptes.forEach(c => {
+    let s = 0;
+    transactions.filter(t => t.compte === c).forEach(t => {
+      t.type === "credit" ? s += t.montant : s -= t.montant;
+    });
+    pdf.text(`${c}: ${s.toLocaleString()} Ar`, 15, y);
+    y += 7;
+  });
+  
+  y += 5;
+  pdf.setFontSize(16);
+  pdf.text(`Solde global: ${document.getElementById("soldeSpan").innerText}`, 10, y);
+  
+  y += 15;
+  pdf.setFontSize(12);
+  pdf.text(`Total transactions: ${transactions.length}`, 10, y);
+  y += 7;
+  pdf.text(`Nombre de Diakonas: ${diakonas.length}`, 10, y);
+  y += 7;
+  pdf.text(`Nombre de Mpiandry: ${mpiandry.length}`, 10, y);
+  y += 7;
+  pdf.text(`Nombre de Mpandray: ${mpandray.length}`, 10, y);
+  
+  pdf.save(`rapport_financier_${new Date().getTime()}.pdf`);
+  alert("PDF exporte avec succes");
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+  let today = new Date().toISOString().split('T')[0];
+  document.getElementById("tDate").value = today;
+  document.getElementById("pDate").value = today;
+});
+
+// Fermer modals en cliquant en dehors
+window.onclick = function(event) {
+  const modals = ['detailModal', 'membreModal', 'cotisationModal', 'editMembreModal'];
+  modals.forEach(modalId => {
+    const modal = document.getElementById(modalId);
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  });
+}
+</script>
+
+</body>
+</html>
